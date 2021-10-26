@@ -1,3 +1,4 @@
+import { User } from "modules/users/infra/typeorm/entities/User";
 import {
   Column,
   CreateDateColumn,
@@ -9,7 +10,7 @@ import {
 } from "typeorm";
 
 @Entity("address")
-class User {
+class Address {
   @PrimaryColumn("uuid")
   id: string;
 
@@ -39,4 +40,4 @@ class User {
   updated_at: Date;
 }
 
-export { User };
+export { Address };
