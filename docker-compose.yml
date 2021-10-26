@@ -1,0 +1,35 @@
+version: "3.7"
+
+services: 
+  database_liven:
+    image: postgres
+    container_name: database_liven
+    restart: always
+    ports:
+      - 5432:5432
+    environment: 
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=liven
+      - POSTGRES_DB=project-liven
+    volumes: 
+      - pgdata:/data/postgres
+    networks: 
+      - host
+      
+  app:
+    build: .
+    container_name: project-liven
+    ports: 
+      - 3333:3333
+    volumes: 
+      - .:/usr/app
+    networks: 
+      - host
+
+volumes: 
+  pgdata:
+    driver: local
+
+networks:
+  host:
+    driver: bridge

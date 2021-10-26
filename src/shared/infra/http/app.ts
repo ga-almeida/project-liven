@@ -1,11 +1,10 @@
 import "../../container";
 import "../typeorm/index";
 import express, { NextFunction, Response, Request } from "express";
+import "express-async-errors";
 // import swaggerUi from "swagger-ui-express";
 
 import { AppError } from "../../errors/AppError";
-
-// import "@shared/container";
 
 // import swaggerFile from "../../../swagger.json";
 // import { router } from "./routes";
