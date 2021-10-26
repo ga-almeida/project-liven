@@ -1,8 +1,9 @@
+import "../../container";
 import "../typeorm/index";
 import express, { NextFunction, Response, Request } from "express";
 // import swaggerUi from "swagger-ui-express";
 
-import { AppError } from "../../../errors/AppError";
+import { AppError } from "../../errors/AppError";
 
 // import "@shared/container";
 
