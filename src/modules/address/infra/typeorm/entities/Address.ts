@@ -1,4 +1,3 @@
-import { User } from "modules/users/infra/typeorm/entities/User";
 import {
   Column,
   CreateDateColumn,
@@ -8,6 +7,8 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
+
+import { User } from "../../../../users/infra/typeorm/entities/User";
 
 @Entity("address")
 class Address {
