@@ -1,16 +1,19 @@
 import { AppError } from "../../../../shared/errors/AppError";
 import { User } from "../../infra/typeorm/entities/User";
 import { UsersRepositoryInMemory } from "../../repositories/in-memory/UsersRepositoryInMemory";
-import { CreateUserUseCase } from "./CreateUserUseCase";
+import { CreateUserUseCase } from "../createUser/CreateUserUseCase";
+import { UpdateUserUseCase } from "./UpdateUserUseCase";
 
+let updateUserUseCase: UpdateUserUseCase;
 let createUserUseCase: CreateUserUseCase;
 let usersRepositoryInMemory: UsersRepositoryInMemory;
 let user: User;
 
-describe("Create User", () => {
+describe("Update User", () => {
   beforeEach(() => {
     usersRepositoryInMemory = new UsersRepositoryInMemory();
     createUserUseCase = new CreateUserUseCase(usersRepositoryInMemory);
+    updateUserUseCase = new UpdateUserUseCase(usersRepositoryInMemory);
     user = new User();
 
     Object.assign(user, {
@@ -21,7 +24,7 @@ describe("Create User", () => {
     });
   });
 
-  it("should be able to create a new user", async () => {
+  it("should be able to update an user", async () => {
     const newUser = await createUserUseCase.execute({
       email: user.email,
       name: user.name,
@@ -29,10 +32,19 @@ describe("Create User", () => {
       username: user.username,
     });
 
-    expect(newUser).toHaveProperty("id");
+    const updateUser = await updateUserUseCase.execute({
+      id: newUser.id,
+      email: user.email,
+      name: "userNewNameTest",
+      password: user.password,
+      username: user.username,
+    });
+
+    expect(newUser.id).toBe(updateUser.id);
+    expect(updateUser.name).toBe("userNewNameTest");
   });
 
-  it("should not be able to create a new user when email already exists", async () => {
+  it("should not be able to update a user when email already exists", async () => {
     await createUserUseCase.execute({
       email: user.email,
       name: user.name,
@@ -40,8 +52,16 @@ describe("Create User", () => {
       username: user.username,
     });
 
+    const updateUser = await createUserUseCase.execute({
+      email: "email2@test.com.br",
+      name: "name2",
+      password: "password2",
+      username: "username2",
+    });
+
     await expect(
-      createUserUseCase.execute({
+      updateUserUseCase.execute({
+        id: updateUser.id,
         email: user.email,
         name: "User Test Email Already Exists",
         password: "userTesPasswordEmailAlreadyExists",
@@ -50,7 +70,7 @@ describe("Create User", () => {
     ).rejects.toEqual(new AppError("User with email already exists!"));
   });
 
-  it("should not be able to create a new user when username already exists", async () => {
+  it("should not be able to update a user when username already exists", async () => {
     await createUserUseCase.execute({
       email: user.email,
       name: user.name,
@@ -58,8 +78,16 @@ describe("Create User", () => {
       username: user.username,
     });
 
+    const updateUser = await createUserUseCase.execute({
+      email: "email2@test.com.br",
+      name: "name2",
+      password: "password2",
+      username: "username2",
+    });
+
     await expect(
-      createUserUseCase.execute({
+      updateUserUseCase.execute({
+        id: updateUser.id,
         email: "user@testUsername.com.br",
         name: "User Test Username Already Exists",
         password: "userTesPasswordUsernameAlreadyExists",

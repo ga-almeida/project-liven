@@ -9,9 +9,9 @@ class UpdateUserController {
     const { email, name, password, username }: CreateUserDTO = request.body;
     const { id } = request.params;
 
-    const createUserUseCase = container.resolve(UpdateUserUseCase);
+    const updateUserUseCase = container.resolve(UpdateUserUseCase);
 
-    const user = await createUserUseCase.execute({
+    const user = await updateUserUseCase.execute({
       email,
       name,
       password,

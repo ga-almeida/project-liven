@@ -41,9 +41,9 @@ class UsersRepository implements IUsersRepository {
       username,
     });
 
-    const userSave = await this.repository.save(userCreated);
+    await this.repository.save(userCreated);
 
-    return userSave;
+    return userCreated;
   }
 
   findById(id: string): Promise<User> {
