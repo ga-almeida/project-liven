@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 
 import { CreateUserDTO } from "../../dtos/CreateUserDTO";
+import { UpdateUserDTO } from "../../dtos/UpdateUserDTO";
 import { User } from "../../infra/typeorm/entities/User";
 import { IUsersRepository } from "../IUsersRepository";
 
@@ -38,6 +39,27 @@ class UsersRepositoryInMemory implements IUsersRepository {
     this.users.push(newUser);
 
     return newUser;
+  }
+
+  async update({
+    email,
+    id,
+    name,
+    password,
+    username,
+  }: UpdateUserDTO): Promise<User> {
+    const updateUser = {
+      email,
+      name,
+      password,
+      username,
+    };
+
+    const userIndex = this.users.findIndex((user) => user.id === id);
+
+    this.users[userIndex] = { ...this.users[userIndex], ...updateUser };
+
+    return this.users[userIndex];
   }
 }
 
