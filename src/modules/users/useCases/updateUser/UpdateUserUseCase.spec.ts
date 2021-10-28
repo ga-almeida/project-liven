@@ -1,5 +1,6 @@
 import { AppError } from "../../../../shared/errors/AppError";
 import { User } from "../../infra/typeorm/entities/User";
+import { FakeHashProvider } from "../../providers/HashProvider/fakes/FakeHashProvider";
 import { UsersRepositoryInMemory } from "../../repositories/in-memory/UsersRepositoryInMemory";
 import { CreateUserUseCase } from "../createUser/CreateUserUseCase";
 import { UpdateUserUseCase } from "./UpdateUserUseCase";
@@ -7,13 +8,21 @@ import { UpdateUserUseCase } from "./UpdateUserUseCase";
 let updateUserUseCase: UpdateUserUseCase;
 let createUserUseCase: CreateUserUseCase;
 let usersRepositoryInMemory: UsersRepositoryInMemory;
+let fakeHashProvider: FakeHashProvider;
 let user: User;
 
 describe("Update User", () => {
   beforeEach(() => {
     usersRepositoryInMemory = new UsersRepositoryInMemory();
-    createUserUseCase = new CreateUserUseCase(usersRepositoryInMemory);
-    updateUserUseCase = new UpdateUserUseCase(usersRepositoryInMemory);
+    fakeHashProvider = new FakeHashProvider();
+    createUserUseCase = new CreateUserUseCase(
+      usersRepositoryInMemory,
+      fakeHashProvider
+    );
+    updateUserUseCase = new UpdateUserUseCase(
+      usersRepositoryInMemory,
+      fakeHashProvider
+    );
     user = new User();
 
     Object.assign(user, {

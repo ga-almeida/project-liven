@@ -1,16 +1,23 @@
 import { AppError } from "../../../../shared/errors/AppError";
 import { User } from "../../infra/typeorm/entities/User";
+import { FakeHashProvider } from "../../providers/HashProvider/fakes/FakeHashProvider";
 import { UsersRepositoryInMemory } from "../../repositories/in-memory/UsersRepositoryInMemory";
 import { CreateUserUseCase } from "./CreateUserUseCase";
 
 let createUserUseCase: CreateUserUseCase;
 let usersRepositoryInMemory: UsersRepositoryInMemory;
+let fakeHashProvider: FakeHashProvider;
 let user: User;
 
 describe("Create User", () => {
   beforeEach(() => {
     usersRepositoryInMemory = new UsersRepositoryInMemory();
-    createUserUseCase = new CreateUserUseCase(usersRepositoryInMemory);
+    fakeHashProvider = new FakeHashProvider();
+    createUserUseCase = new CreateUserUseCase(
+      usersRepositoryInMemory,
+      fakeHashProvider
+    );
+
     user = new User();
 
     Object.assign(user, {

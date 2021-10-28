@@ -6,23 +6,26 @@ import { app } from "../../../../shared/infra/http/app";
 import createConnection from "../../../../shared/infra/typeorm";
 
 let connection: Connection;
-let userId: string;
+let user: {
+  name: string;
+  email: string;
+  password: string;
+  username: string;
+};
 
 describe("Update User", () => {
   beforeAll(async () => {
     connection = await createConnection();
     await connection.runMigrations();
 
-    userId = uuidv4();
-    const name = "User Test";
-    const email = "user@test.com.br";
-    const password = "userTesPassword";
-    const username = "userTestUsername";
+    user = {
+      name: "User Test",
+      email: "user@test.com.br",
+      password: "userTesPassword",
+      username: "userTestUsername",
+    };
 
-    const sql = `INSERT INTO USERS(id, name, email, password, username) 
-                values ('${userId}', '${name}', '${email}', '${password}', '${username}')`;
-
-    await connection.query(sql);
+    await request(app).post("/users").send(user);
   });
 
   afterAll(async () => {
@@ -31,12 +34,22 @@ describe("Update User", () => {
   });
 
   it("should be able to update a user", async () => {
-    const responseUpdate = await request(app).put(`/users/${userId}`).send({
-      email: "user@test.com.br",
-      name: "User Test 2",
-      password: "userTesPassword",
-      username: "userTestUsername",
+    const responseToken = await request(app).post("/sessions").send({
+      email: user.email,
+      password: user.password,
     });
+
+    const { token } = responseToken.body;
+
+    const responseUpdate = await request(app)
+      .put(`/users`)
+      .set({ Authorization: `Bearer ${token}` })
+      .send({
+        email: "user@test.com.br",
+        name: "User Test 2",
+        password: "userTesPassword",
+        username: "userTestUsername",
+      });
 
     expect(responseUpdate.status).toBe(200);
   });
@@ -49,12 +62,22 @@ describe("Update User", () => {
       username: "userTestUsername2",
     });
 
-    const responseUpdate = await request(app).put(`/users/${userId}`).send({
-      email: "user@test2.com.br",
-      name: "User Test 2",
-      password: "userTesPassword2",
-      username: "userTestUsernameEmailAlreadyExists2",
+    const responseToken = await request(app).post("/sessions").send({
+      email: user.email,
+      password: user.password,
     });
+
+    const { token } = responseToken.body;
+
+    const responseUpdate = await request(app)
+      .put(`/users`)
+      .set({ Authorization: `Bearer ${token}` })
+      .send({
+        email: "user@test2.com.br",
+        name: "User Test 2",
+        password: "userTesPassword2",
+        username: "userTestUsernameEmailAlreadyExists2",
+      });
 
     expect(responseUpdate.status).toBe(400);
   });
@@ -67,12 +90,22 @@ describe("Update User", () => {
       username: "userTestUsername2",
     });
 
-    const responseUpdate = await request(app).put(`/users/${userId}`).send({
-      email: "user@testUsernameAlreadyExists.com.br",
-      name: "User Test 2",
-      password: "userTesPassword2",
-      username: "userTestUsername2",
+    const responseToken = await request(app).post("/sessions").send({
+      email: user.email,
+      password: user.password,
     });
+
+    const { token } = responseToken.body;
+
+    const responseUpdate = await request(app)
+      .put(`/users`)
+      .set({ Authorization: `Bearer ${token}` })
+      .send({
+        email: "user@testUsernameAlreadyExists.com.br",
+        name: "User Test 2",
+        password: "userTesPassword2",
+        username: "userTestUsername2",
+      });
 
     expect(responseUpdate.status).toBe(400);
   });
